@@ -11,13 +11,13 @@ export function Breadcrumbs({ onBack }) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* <button
+      <button
         onClick={onBack}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" />
+        {/* <ArrowLeft className="h-4 w-4" /> */}
         <span>Back</span>
-      </button> */}
+      </button>
 
       {visiblePathnames.length > 0 && (
         <>
@@ -31,19 +31,19 @@ export function Breadcrumbs({ onBack }) {
                 <div key={name} className="flex items-center">
                   {index === 0 ? (
                     <Link
-                      to={routeTo}
+                      // to={routeTo}
                       className="text-muted-foreground hover:text-foreground capitalize"
                     >
                       {name.replace(/-/g, " ")}
                     </Link>
                   ) : (
                     <span className="font-medium text-foreground capitalize">
-                      {name.replace(/-/g, " ")}
+                      {/* {name.replace(/-/g, " ")} */}
                     </span>
                   )}
-                  {!isLast && (
+                  {/* {!isLast && (
                     <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-                  )}
+                  )} */}
                 </div>
               );
             })}

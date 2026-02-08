@@ -1,25 +1,12 @@
-import * as React from "react";
 import {
   AudioWaveform,
-  
+  Blocks,
   Command,
-
+  Frame,
   GalleryVerticalEnd,
-
-  LayoutDashboard,  
-    FileText,        
-    BookOpen,       
-    Book,          
-    Scale,            
-    Box,            
-    Mountain,        
-    SquareStack,     
-    ShoppingCart,    
-    Warehouse,
-    Frame,
-    ShoppingBag,
-    Package,
-    ReceiptText,  
+  Package,
+  Settings2,
+  ShoppingBag,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -32,209 +19,378 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMainUser } from "./nav-main-user";
 import Cookies from "js-cookie";
+import { NavMainReport } from "./nav-main-report";
+import { useState, useMemo } from "react";
+
+const NAVIGATION_CONFIG = {
+  COMMON: {
+    DASHBOARD: {
+      title: "Dashboard",
+      url: "/home",
+      icon: Frame,
+      isActive: false,
+    },
+      TRIP: {
+      title: "Trip",
+      url: "/trip",
+      icon: Frame,
+      isActive: false,
+    },
+     DRIVER: {
+      title: "Driver",
+      url: "/driver",
+      icon: Frame,
+      isActive: false,
+    },
+      VEHICLE: {
+      title: "Vehicle",
+      url: "/vehicle",
+      icon: Frame,
+      isActive: false,
+    },
+      DRIVERACTIVITY: {
+      title: "Driver Activity",
+      url: "/activity-driver",
+      icon: Frame,
+      isActive: false,
+    },
+     DRIVER_AUTO_POSITION: {
+      title: "Driver Auto Position",
+      url: "/position-auto-driver",
+        icon: Frame,
+      isActive: false,
+  },
+  },
+
+  MODULES: {
+    CHAPTER: {
+      title: "Chapter",
+      url: "/chapter",
+      icon: Frame,
+      isActive: false,
+    },
+
+    MASTER_SETTINGS: {
+      title: "Master Settings",
+      url: "#",
+      isActive: false,
+      icon: Settings2,
+      items: [
+        {
+          title: "Chapters",
+          url: "/master/chapter",
+        },
+        {
+          title: "Viewer",
+          url: "/master/viewer",
+        },
+        {
+          title: "Sign Up",
+          url: "/master/signup",
+        },
+      ],
+    },
+
+    MEMBERSHIP: {
+      title: "MemberShip",
+      url: "#",
+      isActive: false,
+      icon: ShoppingBag,
+      items: [
+        {
+          title: "Dashboard",
+          url: "/membership/dashboard",
+        },
+        {
+          title: "Active Membership",
+          url: "/membership/active",
+        },
+        {
+          title: "InActive Membership",
+          url: "/membership/inactive",
+        },
+      ],
+    },
+
+    DONOR: {
+      title: "Donor",
+      url: "#",
+      isActive: false,
+      icon: Package,
+      items: [
+        {
+          title: "Donor List",
+          url: "/donor/donors",
+        },
+        {
+          title: "Duplicate",
+          url: "/donor/duplicate",
+        },
+      ],
+    },
+
+    RECEIPT: {
+      title: "Receipt",
+      url: "/receipt",
+      isActive: false,
+      icon: Package,
+    },
+
+    SCHOOL: {
+      title: "School",
+      url: "#",
+      isActive: false,
+      icon: Package,
+      items: [
+        {
+          title: "School List",
+          url: "/school/list",
+        },
+        {
+          title: "School To Allot",
+          url: "/school/to-allot",
+        },
+        {
+          title: "School Alloted",
+          url: "/school/alloted",
+        },
+        {
+          title: "Repeated Donor",
+          url: "/school/repeated",
+        },
+      ],
+    },
+    PROMOTER: {
+      title: "Promoter",
+      url: "/promoter",
+      isActive: false,
+      icon: Package,
+    },
+    PANEL: {
+      title: "Panel Condition",
+      url: "/panel-condition",
+      isActive: false,
+      icon: Package,
+    },
+    EVENt: {
+      title: "Event List",
+      url: "/event-list",
+      isActive: false,
+      icon: Package,
+    },
+  },
+
+  REPORTS: {
+    SUMMARY: {
+      title: "Summary",
+      url: "#",
+      isActive: false,
+      icon: Settings2,
+      items: [
+        {
+          title: "Donor",
+          url: "/report/donor-summary",
+        },
+        {
+          title: "Promoter",
+          url: "/report/promoter-summary",
+        },
+        {
+          title: "Receipt",
+          url: "/report/receipt-summary",
+        },
+        {
+          title: "Donation",
+          url: "/report/donation-summary",
+        },
+        {
+          title: "School",
+          url: "/report/school-summary",
+        },
+        {
+          title: "10DB Statement",
+          url: "/report/10db-statement-summary",
+        },
+        {
+          title: "Suspense",
+          url: "/report/suspense-summary",
+        },
+        {
+          title: "CPR",
+          url: "/report/cpr-summary",
+        },
+      ],
+    },
+
+    DOWNLOADS: {
+      title: "Downloads",
+      url: "/download",
+      icon: Blocks,
+      isActive: false,
+    },
+
+    OTHER: {
+      title: "Other",
+      url: "#",
+      isActive: false,
+      icon: Package,
+      items: [
+        {
+          title: "Faq",
+          url: "/other/faq",
+        },
+        {
+          title: "Team",
+          url: "/other/team",
+        },
+        {
+          title: "Notification",
+          url: "/other/notification",
+        },
+       
+      ],
+    },
+
+    SETTINGS: {
+      title: "Settings",
+      url: "/settings",
+      icon: Blocks,
+      isActive: false,
+    },
+    FOLDER: {
+      title: "Folder",
+      url: "/folder",
+      icon: Blocks,
+      isActive: false,
+    },
+    MULTIALLOTMENT: {
+      title: "Multi-Allotment",
+      url: "/multi-allotment",
+      icon: Blocks,
+      isActive: false,
+    },
+
+    RECEIPT_ZERO: {
+      title: "Recepit-S",
+      url: "/recepit/zero-list",
+      icon: Blocks,
+      isActive: false,
+    },
+
+    RECEIPT_CHANGE_DONOR: {
+      title: "C-Recepit-Donor",
+      url: "/recepit/change-donor",
+      icon: Blocks,
+      isActive: false,
+    },
+
+    RECEIPT_MULTIPLE: {
+      title: "M-Recepit",
+      url: "/recepit/multiple-list",
+      icon: Blocks,
+      isActive: false,
+    },
+  },
+};
+
+const USER_ROLE_PERMISSIONS = {
+  1: {
+    navMain: ["DASHBOARD", "TRIP","DRIVER","VEHICLE","DRIVERACTIVITY","DRIVER_AUTO_POSITION"],
+    navMainReport: [ "SETTINGS"],
+  },
+
+  2: {
+    navMain: [
+  "DASHBOARD", "TRIP","DRIVER","VEHICLE","DRIVERACTIVITY","DRIVER_AUTO_POSITION"
+     
+    ],
+    navMainReport: ["SETTINGS"],
+  },
+
+  
+};
+
+const LIMITED_MASTER_SETTINGS = {
+  title: "Master Settings",
+  url: "#",
+  isActive: false,
+  icon: Settings2,
+  items: [
+    {
+      title: "Chapters",
+      url: "/master/chapter",
+    },
+  ],
+};
+
+const useNavigationData = (userType) => {
+  return useMemo(() => {
+    const permissions =
+      USER_ROLE_PERMISSIONS[userType] || USER_ROLE_PERMISSIONS[1];
+
+    const buildNavItems = (permissionKeys, config, customItems = {}) => {
+      return permissionKeys
+        .map((key) => {
+          if (key === "MASTER_SETTINGS_LIMITED") {
+            return LIMITED_MASTER_SETTINGS;
+          }
+          return config[key];
+        })
+        .filter(Boolean);
+    };
+
+    const navMain = buildNavItems(
+      permissions.navMain,
+      { ...NAVIGATION_CONFIG.COMMON, ...NAVIGATION_CONFIG.MODULES },
+      { MASTER_SETTINGS_LIMITED: LIMITED_MASTER_SETTINGS }
+    );
+
+    const navMainReport = buildNavItems(
+      permissions.navMainReport,
+      NAVIGATION_CONFIG.REPORTS
+    );
+
+    return { navMain, navMainReport };
+  }, [userType]);
+};
+
+const TEAMS_CONFIG = [
+  {
+    name: "FLEET CRM",
+    logo: GalleryVerticalEnd,
+    plan: "",
+  },
+  {
+    name: "Acme Corp.",
+    logo: AudioWaveform,
+    plan: "Startup",
+  },
+  {
+    name: "Evil Corp.",
+    logo: Command,
+    plan: "Free",
+  },
+];
 
 export function AppSidebar({ ...props }) {
   const nameL = Cookies.get("name");
   const emailL = Cookies.get("email");
+  const userType = Cookies.get("user_type_id") || "1";
+  const [openItem, setOpenItem] = useState(null);
+
+  const { navMain, navMainReport } = useNavigationData(userType);
 
   const initialData = {
     user: {
-      name: `${nameL}`,
-      email: `${emailL}`,
+      name: nameL || "User",
+      email: emailL || "user@example.com",
       avatar: "/avatars/shadcn.jpg",
     },
-    teams: [
-      {
-        name: `JK Steel`,
-        logo: GalleryVerticalEnd,
-        plan: "",
-      },
-      {
-        name: "Acme Corp.",
-        logo: AudioWaveform,
-        plan: "Startup",
-      },
-      {
-        name: "Evil Corp.",
-        logo: Command,
-        plan: "Free",
-      },
-    ],
-    navMain: [
-      {
-        title: "Dashboard",
-        url: "/home",
-        icon: Frame,
-        isActive: false,
-      },
-     
-     
-      {
-        title: "Client",
-        url: "/client",
-        icon: ShoppingBag,
-        isActive: false,
-      },
-      {
-        title: "Item",
-        url: "/item",
-        icon: Package,
-        isActive: false,
-      },
-      {
-        title: "Quotation",
-        url: "/quotation",
-        icon: Package,
-        isActive: false,
-      },
-      {
-        title: "Settings",
-        url: "/setting",
-        icon: Package,
-        isActive: false,
-      },
-      // {
-      //   title: "Report",
-      //   url: "/report/buyer",
-      //   icon: Package,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Report1",
-      //   url: "/report/item",
-      //   icon: Package,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Report3",
-      //   url: "/report/quotation-report",
-      //   icon: Package,
-      //   isActive: false,
-      // },
-      // {
-      //   title: "Report4",
-      //   url: "/report/quotation-detail-report",
-      //   icon: Package,
-      //   isActive: false,
-      // },
-      {
-        title: "Report",
-        url: "#",
-        icon: ReceiptText,
-        isActive: false,
-        items: [
-          {
-            title: "Buyer",
-            url: "/report/buyer",
-          },
-          {
-            title: "Item",
-            url: "/report/item",
-          },
-          {
-            title: "Quotation",
-            url: "/report/quotation-report",
-          },
-          {
-            title: "Quotation detail",
-            url: "/report/quotation-detail-report",
-          },
-          
-        ],
-      },
-     
-    ],
+    teams: TEAMS_CONFIG,
+    navMain,
+    navMainReport,
   };
-  // const initialData = {
-  //   user: {
-  //     name: `${nameL}`,
-  //     email: `${emailL}`,
-  //     avatar: "/avatars/shadcn.jpg",
-  //   },
-  //   teams: [
-  //     {
-  //       name: `Jaju Flooring`,
-  //       logo: GalleryVerticalEnd,
-  //       plan: "",
-  //     },
-  //     {
-  //       name: "Acme Corp.",
-  //       logo: AudioWaveform,
-  //       plan: "Startup",
-  //     },
-  //     {
-  //       name: "Evil Corp.",
-  //       logo: Command,
-  //       plan: "Free",
-  //     },
-  //   ],
-  //   navMain: [
-  //     {
-  //       title: "Dashboard",
-  //       url: "/home",
-  //       icon: LayoutDashboard,
-  //       isActive: false,
-  //     },
-     
-  //     {
-  //       title: "Estimate",
-  //       url: "/estimate",
-  //       icon: FileText,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Day Book",
-  //       url: "/day-book",
-  //       icon: BookOpen,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Ledger",
-  //       url: "/ledger",
-  //       icon: Book,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Trial Balance",
-  //       url: "/trial-balance",
-  //       icon: Scale,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Product",
-  //       url: "/product",
-  //       icon: Box,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Purchase Granite",
-  //       url: "/purchase-granite",
-  //       icon: Mountain,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Purchase Tiles",
-  //       url: "/purchase-tiles",
-  //       icon: SquareStack,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Sales",
-  //       url: "/sales",
-  //       icon: ShoppingCart,
-  //       isActive: false,
-  //     },
-  //     {
-  //       title: "Stocks",
-  //       url: "/stocks",
-  //       icon: Warehouse,
-  //       isActive: false,
-  //     },
-     
-  //   ],
-  // };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -242,9 +398,16 @@ export function AppSidebar({ ...props }) {
         <TeamSwitcher teams={initialData.teams} />
       </SidebarHeader>
       <SidebarContent className="sidebar-content">
-        {/* <NavProjects projects={data.projects} /> */}
-        <NavMain items={initialData.navMain} />
-        <NavMainUser projects={initialData.userManagement} />
+        <NavMain
+          items={initialData.navMain}
+          openItem={openItem}
+          setOpenItem={setOpenItem}
+        />
+        <NavMainReport
+          items={initialData.navMainReport}
+          openItem={openItem}
+          setOpenItem={setOpenItem}
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={initialData.user} />
@@ -254,5 +417,4 @@ export function AppSidebar({ ...props }) {
   );
 }
 
-
-//changes 
+export { NAVIGATION_CONFIG, USER_ROLE_PERMISSIONS };

@@ -1,6 +1,7 @@
+import LoginAuth from "@/components/auth/login-auth";
 
 
-import LoginAuth from "@/components/loginAuth/LoginAuth";
+
 
 const Login = () => {
   return (

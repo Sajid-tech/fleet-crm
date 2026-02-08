@@ -1,17 +1,12 @@
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChevronRight,
+  Home,
+  ShoppingBag,
+  X
+} from "lucide-react";
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  Frame,
-  Settings2,
-  ShoppingBag,
-  File,
-  Home,
-  ChevronUp,
-  X,
-  ChevronRight,
-  ReceiptText
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 export function AppBottombar() {
   const location = useLocation();
@@ -27,119 +22,38 @@ export function AppBottombar() {
     },
    
     {
-      title: "Client",
-      url: "/client", 
+      title: "Day Book",
+      url: "/day-book", 
       icon: ShoppingBag,
     },
 
    
      {
-      title: "item",
-      url: "/item",
-      icon: ShoppingBag,
-     
-    },
-    {
-      title: "Quotation",
-      url: "/quotation",
-      icon: ShoppingBag,
-    },
-    // {
-    //   title: "Setting",
-    //   url: "/setting",
-    //   icon: ShoppingBag,
-    // },
-    {
-      title: "Report",
+      title: "Ledger",
       url: "#",
-      icon: ReceiptText,
-    
+      icon: ShoppingBag,
       items: [
         {
-          title: "Buyer",
-          url: "/report/buyer",
+          title: "Ledger Report",
+          url: "/ledger",
         },
         {
-          title: "Item",
-          url: "/report/item",
+          title: "Change Ledger Name",
+          url: "/change-ledger-name",
         },
-        {
-          title: "Quotation",
-          url: "/report/quotation-report",
-        },
-        {
-          title: "Quotation detail",
-          url: "/report/quotation-detail-report",
-        },
-      ]
-      }
+      
+      ],
+    },
+    {
+      title: "Trial Balance",
+      url: "/trial-balance",
+      icon: ShoppingBag,
+    },
+    
+
    
   ];
-  // const navItems = [
-  //   {
-  //     title: "Home",
-  //     url: "/home",
-  //     icon: Home,
-  //   },
-   
-  //   {
-  //     title: "Estimate",
-  //     url: "/estimate", 
-  //     icon: ShoppingBag,
-  //   },
-  //   {
-  //     title: "Purchase",
-  //     url: "#",
-  //     icon: Settings2,
-  //     items: [
-  //       {
-  //         title: "Purchase Granite",
-  //         url: "/purchase-granite",
-  //       },
-  //       {
-  //         title: "Purchase Tiles",
-  //         url: "/purchase-tiles",
-  //       },
-      
-  //     ],
-  //   },
-  //   {
-  //     title: "Product",
-  //     url: "/product",
-  //     icon: ShoppingBag,
-  //   },
-  //   {
-  //     title: "Sales",
-  //     url: "/sales",
-  //     icon: ShoppingBag,
-  //   },
-
-  //   {
-  //     title: "Report",
-  //     url: "#",
-  //     icon: File,
-  //     items: [
-  //       {
-  //         title: "Day Book",
-  //         url: "/day-book",
-  //       },
-  //       {
-  //         title: "Ledger",
-  //         url: "/ledger",
-  //       },
-  //       {
-  //         title: "Trial Balance",
-  //         url: "/trial-balance",
-  //       },
-  //       {
-  //         title: "Stocks",
-  //         url: "/stocks",
-  //       },
-  //     ],
-  //   },
-  // ];
-
-  // show only first 5 items in bottom navigation
+ 
   const mobileNavItems = navItems.slice(0, 6);
 
   const handleItemClick = (item, e) => {
@@ -292,5 +206,3 @@ export function AppBottombar() {
     </>
   );
 }
-
-//sajid changes 

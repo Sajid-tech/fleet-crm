@@ -5,12 +5,13 @@ const useAuth = () => {
   const [authData, setAuthData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  
   useEffect(() => {
     const token = Cookies.get("token");
     const userData = {
       id: Cookies.get("id"),
       name: Cookies.get("name"),
-      userType: Cookies.get("userType"),
+      userType: Cookies.get("user_type_id"),
       email: Cookies.get("email"),
     };
 

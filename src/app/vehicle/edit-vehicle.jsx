@@ -1,0 +1,318 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { ArrowLeft, Car } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import BASE_URL from "@/config/base-url";
+
+const EditVehicle = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const token = Cookies.get("token");
+
+  const [errors, setErrors] = useState({});
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [initialVehicle, setInitialVehicle] = useState({});
+  const [isFormDirty, setIsFormDirty] = useState(false);
+
+  const [vehicle, setVehicle] = useState({
+    vehicle_uuid: "",
+    vehicle_number_plate: "",
+    vehicle_product_type: "",
+    vehicle_status: "",
+  });
+
+  const { data: vehicleData, isLoading } = useQuery({
+    queryKey: ["vehicle", id],
+    queryFn: async () => {
+      const response = await axios.get(`${BASE_URL}/api/vehicle/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const vehicleData = response.data?.data;
+      const cleanedData = {};
+
+      Object.keys(vehicleData).forEach((key) => {
+        cleanedData[key] = vehicleData[key] === null ? "" : vehicleData[key];
+      });
+
+      setVehicle(cleanedData);
+      setInitialVehicle(cleanedData);
+      return response.data;
+    },
+    enabled: !!id,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    const isDirty = JSON.stringify(vehicle) !== JSON.stringify(initialVehicle);
+    setIsFormDirty(isDirty);
+  }, [vehicle, initialVehicle]);
+
+  const onInputChange = (e) => {
+    const { name, value } = e.target;
+    setVehicle((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (!vehicle.vehicle_uuid?.trim()) {
+      newErrors.vehicle_uuid = "Vehicle UUID is required";
+      isValid = false;
+    }
+
+    if (!vehicle.vehicle_number_plate?.trim()) {
+      newErrors.vehicle_number_plate = "Vehicle Number Plate is required";
+      isValid = false;
+    }
+
+    if (!vehicle.vehicle_product_type?.trim()) {
+      newErrors.vehicle_product_type = "Vehicle Product Type is required";
+      isValid = false;
+    }
+
+    if (!vehicle.vehicle_status) {
+      newErrors.vehicle_status = "Vehicle Status is required";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return { isValid, errors: newErrors };
+  };
+
+  const updateVehicleMutation = useMutation({
+    mutationFn: async (formData) => {
+      const response = await axios.put(
+        `${BASE_URL}/api/vehicle/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      if (data.code === 201) {
+        queryClient.invalidateQueries(["vehicles"]);
+        toast.success(data.message || "Vehicle Updated Successfully");
+        navigate("/vehicle");
+      } else {
+        toast.error(data.message || "Vehicle Update Error");
+      }
+    },
+    onError: (error) => {
+      console.error("Vehicle Update Error:", error.response?.data?.message);
+      toast.error(error.response?.data?.message || "Vehicle Update Error");
+    },
+    onSettled: () => {
+      setIsButtonDisabled(false);
+    },
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const { isValid, errors } = validateForm();
+
+    if (!isValid) {
+      const firstError = Object.values(errors)[0];
+      toast.error(firstError);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("vehicle_uuid", vehicle.vehicle_uuid || "");
+    formData.append("vehicle_number_plate", vehicle.vehicle_number_plate || "");
+    formData.append("vehicle_product_type", vehicle.vehicle_product_type || "");
+    formData.append("vehicle_status", vehicle.vehicle_status || "");
+
+    setIsButtonDisabled(true);
+    updateVehicleMutation.mutate(formData);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full space-y-1 p-4">
+      <Card>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <Car className="text-muted-foreground w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h1 className="text-md font-semibold text-gray-900">
+                    Edit Vehicle
+                  </h1>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Update vehicle information and details
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => navigate("/vehicle")}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1 flex-shrink-0 mt-2 sm:mt-0"
+          >
+            <ArrowLeft className="w-3 h-3" />
+            Back
+          </Button>
+        </div>
+      </Card>
+
+      <Card>
+        <CardContent className="p-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="space-y-1">
+              <div className="flex items-center p-1 gap-2 text-sm rounded-md px-1 font-medium bg-[var(--team-color)] text-white">
+                <Car className="w-4 h-4" />
+                Vehicle Details
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="">
+                  <Label htmlFor="vehicle_uuid" className="text-xs font-medium">
+                    Vehicle UUID *
+                  </Label>
+                  <Input
+                    id="vehicle_uuid"
+                    name="vehicle_uuid"
+                    value={vehicle.vehicle_uuid}
+                    onChange={onInputChange}
+                    placeholder="Enter vehicle UUID"
+                  />
+                  {errors?.vehicle_uuid && (
+                    <p className="text-red-500 text-xs">{errors.vehicle_uuid}</p>
+                  )}
+                </div>
+
+                <div className="">
+                  <Label htmlFor="vehicle_number_plate" className="text-xs font-medium">
+                    Number Plate *
+                  </Label>
+                  <Input
+                    id="vehicle_number_plate"
+                    name="vehicle_number_plate"
+                    value={vehicle.vehicle_number_plate}
+                    onChange={onInputChange}
+                    placeholder="Enter vehicle number plate"
+                  />
+                  {errors?.vehicle_number_plate && (
+                    <p className="text-red-500 text-xs">{errors.vehicle_number_plate}</p>
+                  )}
+                </div>
+
+                <div className="">
+                  <Label htmlFor="vehicle_product_type" className="text-xs font-medium">
+                    Product Type *
+                  </Label>
+                  <Input
+                    id="vehicle_product_type"
+                    name="vehicle_product_type"
+                    value={vehicle.vehicle_product_type}
+                    onChange={onInputChange}
+                    placeholder="Enter product type"
+                  />
+                  {errors?.vehicle_product_type && (
+                    <p className="text-red-500 text-xs">{errors.vehicle_product_type}</p>
+                  )}
+                </div>
+
+                <div className="">
+                  <Label htmlFor="vehicle_status" className="text-xs font-medium">
+                    Status *
+                  </Label>
+                  <Select
+                    value={vehicle.vehicle_status}
+                    onValueChange={(value) =>
+                      setVehicle((prev) => ({ ...prev, vehicle_status: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors?.vehicle_status && (
+                    <p className="text-red-500 text-xs">{errors.vehicle_status}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-6 border-t">
+              <Button
+                type="submit"
+                disabled={
+                  isButtonDisabled || 
+                  updateVehicleMutation.isPending || 
+                  !isFormDirty
+                }
+                className="flex items-center gap-2"
+              >
+                {updateVehicleMutation.isPending ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <Car className="w-4 h-4" />
+                    Update Vehicle
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => navigate("/vehicle")}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default EditVehicle;
