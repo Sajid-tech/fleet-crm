@@ -1,3 +1,4 @@
+
 import {
   AudioWaveform,
   Blocks,
@@ -58,6 +59,18 @@ const NAVIGATION_CONFIG = {
      DRIVER_AUTO_POSITION: {
       title: "Driver Auto Position",
       url: "/position-auto-driver",
+        icon: Frame,
+      isActive: false,
+  },
+     PAYMENT: {
+      title: "Payment",
+      url: "/payment",
+        icon: Frame,
+      isActive: false,
+  },
+   REPORT: {
+      title: "Report",
+      url: "/report",
         icon: Frame,
       isActive: false,
   },
@@ -296,7 +309,7 @@ const NAVIGATION_CONFIG = {
 
 const USER_ROLE_PERMISSIONS = {
   1: {
-    navMain: ["DASHBOARD", "TRIP","DRIVER","VEHICLE","DRIVERACTIVITY","DRIVER_AUTO_POSITION"],
+    navMain: ["DASHBOARD", "TRIP","DRIVER","VEHICLE","DRIVERACTIVITY","DRIVER_AUTO_POSITION","PAYMENT", "REPORT"],
     navMainReport: [ "SETTINGS"],
   },
 
