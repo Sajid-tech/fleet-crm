@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import Maintenance from "@/components/common/maintenance";
 import SignUp from "@/app/auth/sign-up";
 import SignUPList from "@/app/master-settings/sign-up-list";
-import CprReport from "@/app/report/cpr/cpr-report";
+
 import EventList from "@/app/event/event-list";
 import EventCreate from "@/app/event/event-create";
 import EventEdit from "@/app/event/event-edit";
@@ -21,6 +21,8 @@ import CreateVehicle from "@/app/vehicle/create-vehicle";
 import EditDriver from "@/app/driver/edit-driver";
 import EditVehicle from "@/app/vehicle/edit-vehicle";
 import DriverAutoPostionList from "@/app/driver-auto-position/driver-auto-position-list";
+import PaymentList from "@/app/payment/payment-list";
+import AllThreeReport from "@/app/report/all-three-report";
 const Login = lazy(() => import("@/app/auth/login"));
 const DonorList = lazy(() => import("@/app/donor/donor-list/donor-list"));
 const ReceiptCreate = lazy(
@@ -66,15 +68,7 @@ const DuplicateDonorEdit = lazy(
 );
 const Receipt = lazy(() => import("@/app/receipt/receipt"));
 const ReceiptView = lazy(() => import("@/app/receipt/receipt-view"));
-const DBStatement = lazy(
-  () => import("@/app/report/10db-statement/10db-statement"),
-);
-const DonationSummary = lazy(() => import("@/app/report/donation/donation"));
-const Donor = lazy(() => import("@/app/report/donor/donor"));
-const Promoter = lazy(() => import("@/app/report/promoter/promoter"));
-const ReceiptSummary = lazy(() => import("@/app/report/receipt/receipt"));
-const SchoolSummary = lazy(() => import("@/app/report/school/school"));
-const SuspenseSummary = lazy(() => import("@/app/report/suspense/suspense"));
+
 const RepeatedDonor = lazy(
   () => import("@/app/school/repeated-donor/repeated-donor"),
 );
@@ -272,7 +266,24 @@ function AppRoutes() {
 
 
 
-
+{/* payment  */}
+<Route
+          path="/payment"
+          element={
+            <Suspense fallback={<LoadingBar />}>
+              {" "}
+              <PaymentList />{" "}
+            </Suspense>
+          }
+        />
+        <Route 
+        path="/report"
+        element={
+            <Suspense fallback={<LoadingBar />}>
+              <AllThreeReport />
+            </Suspense>
+          }
+/>
 
 
 
@@ -615,71 +626,7 @@ function AppRoutes() {
           }
         />
 
-        {/* report  */}
-        <Route
-          path="/report/suspense-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <SuspenseSummary />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/school-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <SchoolSummary />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/receipt-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <ReceiptSummary />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/donation-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <DonationSummary />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/promoter-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <Promoter />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/donor-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <Donor />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/10db-statement-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <DBStatement />
-            </Suspense>
-          }
-        />
-        <Route
-          path="/report/cpr-summary"
-          element={
-            <Suspense fallback={<LoadingBar />}>
-              <CprReport />
-            </Suspense>
-          }
-        />
+        
 
         {/* download  */}
         <Route
